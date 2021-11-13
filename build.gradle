@@ -17,7 +17,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
-    implementation 'com.mojang:datafixerupper:1.0.20'
+    implementation 'com.mojang:datafixerupper:4.0.26'
     testRuntimeOnly "org.apache.logging.log4j:log4j-core:2.14.1"
 }
 
