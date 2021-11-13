@@ -1,3 +1,5 @@
+package com.robotgryphon.dfu.tests.schema;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -7,7 +9,7 @@ import com.mojang.datafixers.types.templates.TypeTemplate;
 
 // You must define at least one schema, to use as a base.
 // The schema is used to hold information on types and templates for data storage.
-class BasicSchema extends Schema {
+public class BasicSchema extends Schema {
     // A type reference is used seemingly to reference a "known" type on objects
     // For reference, see block names and item stacks in Minecraft DFU code
     public static final DSL.TypeReference DATA = () -> "data";

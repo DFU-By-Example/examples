@@ -1,13 +1,13 @@
-import java.util.Optional;
+package com.robotgryphon.dfu.tests;
+
 import java.util.concurrent.Executors;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.*;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.JsonOps;
-import com.mojang.datafixers.types.Type;
-import com.mojang.datafixers.util.Pair;
+import com.robotgryphon.dfu.tests.fixes.UpdateDataValue;
+import com.robotgryphon.dfu.tests.schema.BasicSchema;
+import com.robotgryphon.dfu.tests.util.FileHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -19,10 +19,10 @@ public class TestSimpleVersionUpdate {
         var fixer = buildFixer();
 
         // Get some input data. For us, we just define two fields on an object.
-        JsonObject in = inputData();
+        JsonObject in = FileHelper.INSTANCE.getJsonFromFile("simple_data.json").getAsJsonObject();
 
         // Run the input data through a v1 to v2 update. We expect that everything except "data" is left alone,
-        // and that "data" is updated via UpdateDataValue to be "hithere2" after the update.
+        // and that "data" is updated via com.robotgryphon.dfu.tests.fixes.UpdateDataValue to be "hithere2" after the update.
         final JsonObject jsonOut = fixer.update(BasicSchema.DATA, new Dynamic<>(JsonOps.INSTANCE, in), 1, 2)
                 .getValue()
                 .getAsJsonObject();
@@ -34,13 +34,6 @@ public class TestSimpleVersionUpdate {
         // Ensure that nothing else has changed on the input data.
         Assertions.assertTrue(jsonOut.has("data2"));
         Assertions.assertEquals("donottouch", jsonOut.get("data2").getAsString());
-    }
-
-    private JsonObject inputData() {
-        JsonObject in = new JsonObject();
-        in.addProperty("data", "hithere");
-        in.addProperty("data2", "donottouch");
-        return in;
     }
 
     private DataFixer buildFixer() {

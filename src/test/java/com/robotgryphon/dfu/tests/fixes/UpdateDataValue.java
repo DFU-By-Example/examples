@@ -1,23 +1,21 @@
-import java.util.function.Function;
+package com.robotgryphon.dfu.tests.fixes;
+
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
-import com.mojang.datafixers.types.DynamicOps;
-import com.mojang.datafixers.types.JsonOps;
-import com.mojang.datafixers.util.Pair;
+import com.robotgryphon.dfu.tests.schema.BasicSchema;
 
 /**
  * This is a simplified update fix that changes a data field to a hard-coded value.
  * You can obviously change this to do a lookup or mapping, but we're keeping it simple here.
  */
-class UpdateDataValue extends DataFix {
+public class UpdateDataValue extends DataFix {
 
     private final String newValue;
 
     /**
-     * UpdateDataValue - updates the data field to a new value on traversal.
+     * com.robotgryphon.dfu.tests.fixes.UpdateDataValue - updates the data field to a new value on traversal.
      *
      * @param outputSchema The schema the fix will end on.
      * @param newValue The new value of the data field, after update.
@@ -46,7 +44,7 @@ class UpdateDataValue extends DataFix {
          * #Typed takes in the input type and output type, then applies an update function.
          * The DSL.string() is the resulting data type, and the lambda here is a simplified mapping function.
          */
-        return fixTypeEverywhereTyped("UpdateDataValue: " + newValue, inType, outType, (a)
+        return fixTypeEverywhereTyped("com.robotgryphon.dfu.tests.fixes.UpdateDataValue: " + newValue, inType, outType, (a)
                 -> a.update(finder, DSL.string(), old -> newValue));
     }
 }
