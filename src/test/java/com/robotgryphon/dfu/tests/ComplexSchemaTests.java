@@ -1,10 +1,15 @@
 package com.robotgryphon.dfu.tests;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.DataFixerBuilder;
+import com.mojang.datafixers.*;
+import com.mojang.datafixers.schemas.Schema;
+import com.mojang.datafixers.types.Type;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import com.robotgryphon.dfu.tests.schema.complex.ComplexSchema;
 import com.robotgryphon.dfu.tests.util.FileHelper;
@@ -19,15 +24,21 @@ public class ComplexSchemaTests {
 
         var json = FileHelper.INSTANCE.getJsonFromFile("complex.json");
 
-        final var type = df.getSchema(1)
-            .getType(ComplexSchema.DATA_FILE);
+        final Schema schema = df.getSchema(1);
+        final var allData = schema.getType(ComplexSchema.DATA_FILE);
 
-        final var read = type.readTyped(JsonOps.INSTANCE, json);
+        final var allDataRead = allData.readTyped(JsonOps.INSTANCE, json);
+        final var allDataReadResult = allDataRead.result().orElseThrow();
+        final var data = allDataReadResult.getFirst();
 
-        final var res = read.result().orElseThrow();
-        final var data = res.getSecond().getAsJsonObject();
+        final Typed<?> updateResult = data.update(DSL.field("version", DSL.intType()).finder(), (old) -> {
+            int o = (int) old;
+            return 2;
+        });
 
-        Assertions.assertEquals("complex_data_type", data.get("type").getAsString());
+        var j = updateResult.write();
+        final JsonObject afterUpdate = j.result().orElseThrow().cast(JsonOps.INSTANCE).getAsJsonObject();
+        Assertions.assertEquals(2,  afterUpdate.get("version").getAsInt());
     }
 
     static DataFixer makeFixer() {
