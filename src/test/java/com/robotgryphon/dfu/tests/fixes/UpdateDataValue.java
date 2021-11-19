@@ -44,7 +44,7 @@ public class UpdateDataValue extends DataFix {
          * #Typed takes in the input type and output type, then applies an update function.
          * The DSL.string() is the resulting data type, and the lambda here is a simplified mapping function.
          */
-        return fixTypeEverywhereTyped("com.robotgryphon.dfu.tests.fixes.UpdateDataValue: " + newValue, inType, outType, (a)
+        return fixTypeEverywhereTyped("UpdateDataValue: " + newValue, inType, outType, (a)
                 -> a.update(finder, DSL.string(), old -> newValue));
     }
 }
