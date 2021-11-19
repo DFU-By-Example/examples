@@ -1,14 +1,11 @@
 package com.robotgryphon.dfu.tests;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.datafixers.*;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.DataResult;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import com.robotgryphon.dfu.tests.schema.complex.ComplexSchema;
@@ -19,26 +16,55 @@ import org.junit.jupiter.api.Test;
 public class ComplexSchemaTests {
 
     @Test
-    void canReadData() {
+    void canReadDeepValue() {
         var df = makeFixer();
 
         var json = FileHelper.INSTANCE.getJsonFromFile("complex.json");
 
         final Schema schema = df.getSchema(1);
-        final var allData = schema.getType(ComplexSchema.DATA_FILE);
 
-        final var allDataRead = allData.readTyped(JsonOps.INSTANCE, json);
-        final var allDataReadResult = allDataRead.result().orElseThrow();
-        final var data = allDataReadResult.getFirst();
+        final var jsonRoot = schema.getType(ComplexSchema.FILE)
+                .readTyped(JsonOps.INSTANCE, json)
+                .result()
+                .orElseThrow()
+                .getFirst();
 
-        final Typed<?> updateResult = data.update(DSL.field("version", DSL.intType()).finder(), (old) -> {
-            int o = (int) old;
-            return 2;
-        });
+        // OF for finding the "type" field (string) inside a "data" group (defined type)
+        final OpticFinder<String> dataTypeField = DSL.fieldFinder("type", DSL.string())
+                .inField("data", schema.getType(ComplexSchema.DATA_NODE));
 
-        var j = updateResult.write();
-        final JsonObject afterUpdate = j.result().orElseThrow().cast(JsonOps.INSTANCE).getAsJsonObject();
-        Assertions.assertEquals(2,  afterUpdate.get("version").getAsInt());
+        final var dataTypeValue = jsonRoot.get(dataTypeField);
+
+        Assertions.assertEquals("complex_data_type", dataTypeValue);
+    }
+
+    @Test
+    void canUpdateDeepValue() {
+        var df = makeFixer();
+
+        var json = FileHelper.INSTANCE.getJsonFromFile("complex.json");
+
+        final Schema schema = df.getSchema(1);
+
+        final var jsonRoot = schema.getType(ComplexSchema.FILE)
+                .readTyped(JsonOps.INSTANCE, json)
+                .result()
+                .orElseThrow()
+                .getFirst();
+
+        // OF for finding the "type" field (string) inside a "data" group (defined type)
+        final OpticFinder<String> dataTypeField = DSL.fieldFinder("type", DSL.string())
+                .inField("data", schema.getType(ComplexSchema.DATA_NODE));
+
+        // read updated JSON
+        final var updatedJson = jsonRoot.update(dataTypeField, old -> old + "_new")
+                .write()
+                .result()
+                .orElseThrow()
+                .cast(JsonOps.INSTANCE)
+                .getAsJsonObject();
+
+        Assertions.assertEquals("complex_data_type_new", updatedJson.get("data").getAsJsonObject().get("type").getAsString());
     }
 
     static DataFixer makeFixer() {

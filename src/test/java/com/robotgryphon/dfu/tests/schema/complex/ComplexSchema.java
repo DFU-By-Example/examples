@@ -5,13 +5,12 @@ import java.util.Map;
 import java.util.function.Supplier;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.schemas.Schema;
-import com.mojang.datafixers.types.templates.Hook;
 import com.mojang.datafixers.types.templates.TypeTemplate;
 
 public class ComplexSchema extends Schema {
 
-    public static final DSL.TypeReference DATA_FILE = () -> "all";
-    public static final DSL.TypeReference FILE_DATA_NODE = () -> "data";
+    public static final DSL.TypeReference FILE = () -> "all";
+    public static final DSL.TypeReference DATA_NODE = () -> "data";
 
     public ComplexSchema(int versionKey, Schema parent) {
         super(versionKey, parent);
@@ -21,14 +20,14 @@ public class ComplexSchema extends Schema {
     public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
         // super constructor requires at least one recursive type, issue with Schema#50 (RECURSIVE_TYPES)
 
-        schema.registerType(true, DATA_FILE, () -> {
+        schema.registerType(true, FILE, () -> {
             return DSL.fields(
                     "version", DSL.constType(DSL.intType()),
-                    "data", FILE_DATA_NODE.in(schema)
+                    "data", DATA_NODE.in(schema)
             );
         });
 
-        schema.registerType(false, FILE_DATA_NODE, () -> {
+        schema.registerType(false, DATA_NODE, () -> {
             return DSL.fields(
                     "type", DSL.constType(DSL.string()),
                     "id", DSL.constType(DSL.string())
