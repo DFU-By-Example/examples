@@ -12,7 +12,7 @@ import com.robotgryphon.dfu.tests.util.FileHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestSimpleVersionUpdate {
+public class SimpleFieldDataUpdate {
 
     @Test
     void testSimpleUpdate() {
