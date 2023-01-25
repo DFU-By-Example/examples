@@ -19,6 +19,13 @@ public class ComplexSchemaV2 extends Schema {
     @Override
     public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
 
+        /**
+         * version: 1,
+         * data:
+         *   version: 2
+         *   type: "hi"
+         *   id: "there"
+         */
         schema.registerType(false, FILE, () -> {
             return DSL.fields(
                     "version", DSL.constType(DSL.intType()),

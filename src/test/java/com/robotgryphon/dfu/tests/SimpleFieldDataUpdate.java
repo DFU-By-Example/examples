@@ -56,7 +56,7 @@ public class SimpleFieldDataUpdate {
         builder.addFixer(new UpdateDataValue(v3, "hello_there"));
 
         // in Minecraft code, this uses the bootstrapExecutor; see DataFixesManager#createFixerUpper
-        return builder.build(Executors.newSingleThreadExecutor());
+        return builder.buildOptimized(Executors.newSingleThreadExecutor());
     }
 
 }

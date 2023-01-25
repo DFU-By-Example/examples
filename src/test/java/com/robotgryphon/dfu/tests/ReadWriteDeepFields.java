@@ -74,7 +74,7 @@ public class ReadWriteDeepFields {
 
         builder.addSchema(1, ComplexSchema::new);
 
-        return builder.build(Executors.newSingleThreadExecutor());
+        return builder.buildOptimized(Executors.newSingleThreadExecutor());
     }
 
     private Typed<?> loadAndBindJson(Schema schema) {

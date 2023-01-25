@@ -40,6 +40,6 @@ public class UpdateComplexNode {
         final Schema schemaV2 = builder.addSchema(2, ComplexSchemaV2::new);
         builder.addFixer(new UpdateDataNodeV2(schemaV2));
 
-        return builder.build(Executors.newSingleThreadExecutor());
+        return builder.buildOptimized(Executors.newSingleThreadExecutor());
     }
 }
